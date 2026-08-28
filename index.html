@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Car Viewer - Sound & Engine Note Preview</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- QR Code Generator Section -->
+    <div id="qrSection" class="section">
+        <div class="container">
+            <h1>AR Car Viewer</h1>
+            <p class="subtitle">QR-triggered audio + visual car reveal</p>
+            
+            <div class="control-panel">
+                <div class="form-group">
+                    <label for="modelUrl">3D Model URL (.glb/.gltf)</label>
+                    <input type="text" id="modelUrl" placeholder="https://example.com/car-model.glb" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="audioUrl">Engine Sound URL (optional)</label>
+                    <input type="text" id="audioUrl" placeholder="https://example.com/engine-sound.mp3" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="carName">Car Model Name</label>
+                    <input type="text" id="carName" placeholder="e.g., BMW M3" value="AR Car Model">
+                </div>
+                
+                <button onclick="generateQRCode()" class="btn btn-primary">Generate QR Code</button>
+            </div>
+            
+            <div id="qrCodeContainer" class="qr-container hidden">
+                <div id="qrCode"></div>
+                <p id="qrInfo" class="qr-info">Scan this QR code with your device to view the AR model</p>
+                <button onclick="downloadQR()" class="btn btn-secondary">Download QR Code</button>
+                <button onclick="copyQRLink()" class="btn btn-secondary">Copy Share Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Viewer Section -->
+    <div id="arSection" class="section hidden">
+        <div class="ar-container">
+            <!-- Camera Feed -->
+            <video id="cameraFeed" autoplay playsinline muted></video>
+            <canvas id="arCanvas"></canvas>
+            
+            <!-- 3D Model Container -->
+            <div id="modelContainer"></div>
+            
+            <!-- Controls Overlay -->
+            <div class="ar-controls">
+                <div class="control-group">
+                    <h3 id="modelTitle">Car Model</h3>
+                    <p id="modelDescription">Loading model...</p>
+                </div>
+                
+                <!-- Position Controls -->
+                <div class="control-group">
+                    <h4>Position</h4>
+                    <div class="slider-control">
+                        <label>X Offset</label>
+                        <input type="range" id="posX" min="-2" max="2" step="0.1" value="0" oninput="updateModelPosition()">
+                        <span id="posXValue">0.0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Y Offset</label>
+                        <input type="range" id="posY" min="-2" max="2" step="0.1" value="0" oninput="updateModelPosition()">
+                        <span id="posYValue">0.0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Z Offset (Depth)</label>
+                        <input type="range" id="posZ" min="-5" max="5" step="0.1" value="-2" oninput="updateModelPosition()">
+                        <span id="posZValue">-2.0</span>
+                    </div>
+                </div>
+                
+                <!-- Rotation Controls -->
+                <div class="control-group">
+                    <h4>Rotation</h4>
+                    <div class="slider-control">
+                        <label>Rotate X</label>
+                        <input type="range" id="rotX" min="-3.14" max="3.14" step="0.1" value="0" oninput="updateModelRotation()">
+                    </div>
+                    <div class="slider-control">
+                        <label>Rotate Y</label>
+                        <input type="range" id="rotY" min="-3.14" max="3.14" step="0.1" value="0" oninput="updateModelRotation()">
+                    </div>
+                    <div class="slider-control">
+                        <label>Rotate Z</label>
+                        <input type="range" id="rotZ" min="-3.14" max="3.14" step="0.1" value="0" oninput="updateModelRotation()">
+                    </div>
+                </div>
+                
+                <!-- Zoom Control -->
+                <div class="control-group">
+                    <h4>Zoom & Scale</h4>
+                    <div class="slider-control">
+                        <label>Scale</label>
+                        <input type="range" id="scale" min="0.1" max="5" step="0.1" value="1" oninput="updateModelScale()">
+                        <span id="scaleValue">1.0x</span>
+                    </div>
+                </div>
+                
+                <!-- Audio Controls -->
+                <div class="control-group">
+                    <h4>Audio</h4>
+                    <button onclick="playEngineSound()" class="btn btn-small">Play Engine Sound</button>
+                    <button onclick="stopEngineSound()" class="btn btn-small">Stop</button>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="control-group">
+                    <button onclick="resetView()" class="btn btn-secondary">Reset View</button>
+                    <button onclick="returnToQR()" class="btn btn-primary">Back to QR</button>
+                </div>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="loading-indicator hidden">
+                <div class="spinner"></div>
+                <p>Loading 3D model...</p>
+            </div>
+        </div>
+        
+        <!-- Audio Element -->
+        <audio id="engineAudio"></audio>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
